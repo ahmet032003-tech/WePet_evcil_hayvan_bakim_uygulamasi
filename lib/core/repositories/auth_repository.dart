@@ -35,6 +35,14 @@ class AuthRepository {
     await _auth.signOut();
   }
 
+  /// Kullanıcının Firebase Auth hesabını kalıcı olarak siler.
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      await user.delete();
+    }
+  }
+
   /// Şu an oturumu açık olan mevcut Firebase kullanıcısını döndürür (Giriş yapılmamışsa null).
   User? get currentUser => _auth.currentUser;
 

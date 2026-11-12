@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import 'auth_text_fields_section.dart';
+import 'kvkk_checkbox_row.dart';
 
 class AuthFormCard extends StatefulWidget {
   final bool isLoginMode;
@@ -31,6 +32,7 @@ class _AuthFormCardState extends State<AuthFormCard> {
   final _phoneCtrl = TextEditingController(text: '+90 555 123 45 67');
   final _passwordCtrl = TextEditingController(text: '123456');
   bool _obscurePassword = true;
+  bool _kvkkAccepted = false;
 
   @override
   void dispose() {
@@ -76,6 +78,11 @@ class _AuthFormCardState extends State<AuthFormCard> {
             phoneController: _phoneCtrl,
             passwordController: _passwordCtrl,
           ),
+          if (!widget.isLoginMode)
+            KvkkCheckboxRow(
+              isAccepted: _kvkkAccepted,
+              onChanged: (val) => setState(() => _kvkkAccepted = val),
+            ),
           const SizedBox(height: 20),
           SizedBox(
             height: 52,
@@ -112,6 +119,15 @@ class _AuthFormCardState extends State<AuthFormCard> {
     if (widget.isLoginMode) {
       widget.onLogin(_emailCtrl.text.trim(), _passwordCtrl.text.trim());
     } else {
+      if (!_kvkkAccepted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Lütfen devam etmeden önce KVKK Aydınlatma Metni\'ni onaylayın.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
       widget.onRegister(
         _nameCtrl.text.trim(),
         _emailCtrl.text.trim(),
@@ -121,4 +137,3 @@ class _AuthFormCardState extends State<AuthFormCard> {
     }
   }
 }
-

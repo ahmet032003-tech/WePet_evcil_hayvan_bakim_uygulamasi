@@ -32,12 +32,7 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      padding: EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
+      padding: EdgeInsets.fromLTRB(20, 14, 20, MediaQuery.of(context).viewInsets.bottom + 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,10 +41,7 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
             child: Container(
               width: 44,
               height: 5,
-              decoration: BoxDecoration(
-                color: AppColors.borderLight,
-                borderRadius: BorderRadius.circular(10),
-              ),
+              decoration: BoxDecoration(color: AppColors.borderLight, borderRadius: BorderRadius.circular(10)),
             ),
           ),
           const SizedBox(height: 16),
@@ -77,35 +69,61 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
             subtitle: const Text('WePet v1.0.0 (Build 2026)', style: AppTextStyles.bodyMuted),
             onTap: () {
               Navigator.pop(context);
-              showAboutDialog(
-                context: context,
-                applicationName: 'WePet',
-                applicationVersion: '1.0.0',
-                applicationLegalese: '© 2026 WePet Inc.',
-              );
+              showAboutDialog(context: context, applicationName: 'WePet', applicationVersion: '1.0.0');
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () {
               Navigator.pop(context);
               context.read<AuthBloc>().add(const LogoutRequested());
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Güvenli çıkış yapıldı.'),
-                  behavior: SnackBarBehavior.floating,
-                ),
+                const SnackBar(content: Text('Güvenli çıkış yapıldı.'), behavior: SnackBarBehavior.floating),
               );
             },
-            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-            label: const Text('Çıkış Yap', style: TextStyle(color: Colors.redAccent)),
+            icon: const Icon(Icons.logout_rounded, color: Colors.orange),
+            label: const Text('Çıkış Yap', style: TextStyle(color: Colors.orange)),
             style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Colors.redAccent),
+              side: const BorderSide(color: Colors.orange),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => _confirmDeleteAccount(context),
+            icon: const Icon(Icons.delete_forever_rounded, color: Color(0xFFDC2626), size: 20),
+            label: const Text('Hesabı Sil', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold)),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDeleteAccount(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hesabı Kalıcı Olarak Sil'),
+        content: const Text(
+          'Hesabınızı ve kayıtlı tüm evcil hayvan, adres ve profil verilerinizi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Vazgeç')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFDC2626)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Hesabımı Sil', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      Navigator.pop(context);
+      context.read<AuthBloc>().add(const DeleteAccountRequested());
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hesabınız başarıyla silindi.'), behavior: SnackBarBehavior.floating),
+      );
+    }
   }
 }

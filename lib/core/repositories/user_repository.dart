@@ -24,13 +24,22 @@ class UserRepository {
       'phone': phone,
       'inviteCode': inviteCode,
       'updatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true)); // Mevcut diğer alanları silmeden üzerine birleştirir (merge).
+    }, SetOptions(merge: true));
   }
 
   /// Kullanıcının Firestore'daki profil bilgilerini getirir.
   Future<Map<String, dynamic>?> getUserProfile(String uid) async {
     final doc = await _firestore.collection('users').doc(uid).get();
     return doc.data();
+  }
+
+  /// Kullanıcının Firestore'daki tüm profil verilerini ve pet kayıtlarını kalıcı olarak siler.
+  Future<void> deleteUserData(String uid) async {
+    final pets = await _firestore.collection('users').doc(uid).collection('pets').get();
+    for (final doc in pets.docs) {
+      await doc.reference.delete();
+    }
+    await _firestore.collection('users').doc(uid).delete();
   }
 
   /// Kullanıcının 'users/{uid}/pets' alt koleksiyonuna yeni bir pet profili ekler.
@@ -78,7 +87,7 @@ class UserRepository {
             }).toList());
   }
 
-  /// Kullanıcı profiline yeni bir teslimat adresi ekler (Diziye ekleme: arrayUnion).
+  /// Kullanıcı profiline yeni bir teslimat adresi ekler (arrayUnion).
   Future<void> addAddress(String uid, UserAddressModel address) async {
     await _firestore.collection('users').doc(uid).set({
       'addresses': FieldValue.arrayUnion([
@@ -91,7 +100,7 @@ class UserRepository {
     }, SetOptions(merge: true));
   }
 
-  /// Kullanıcı profilinden kayıtlı bir adresi siler (Diziden çıkarma: arrayRemove).
+  /// Kullanıcı profilinden kayıtlı bir adresi siler (arrayRemove).
   Future<void> deleteAddress(String uid, UserAddressModel address) async {
     await _firestore.collection('users').doc(uid).update({
       'addresses': FieldValue.arrayRemove([

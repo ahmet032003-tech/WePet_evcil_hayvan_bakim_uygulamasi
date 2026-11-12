@@ -14,7 +14,6 @@ import 'checkout_payment_section.dart';
 
 class CheckoutBottomSheet extends StatefulWidget {
   final ShopBloc shopBloc;
-
   const CheckoutBottomSheet({super.key, required this.shopBloc});
 
   static Future<void> show(BuildContext context, ShopBloc shopBloc) {
@@ -50,19 +49,21 @@ class _CheckoutBottomSheetState extends State<CheckoutBottomSheet> {
           final addresses = profileState is ProfileLoaded ? profileState.addresses : [];
           final cards = profileState is ProfileLoaded ? profileState.paymentCards : [];
 
-          if (_selectedAddressId == null && addresses.isNotEmpty) {
-            _selectedAddressId = addresses.first.id;
-          }
-          if (_selectedCardId == null && cards.isNotEmpty) {
-            _selectedCardId = cards.first.id;
-          }
+          if (_selectedAddressId == null && addresses.isNotEmpty) _selectedAddressId = addresses.first.id;
+          if (_selectedCardId == null && cards.isNotEmpty) _selectedCardId = cards.first.id;
 
           return SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildDragHandle(),
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 5,
+                    decoration: BoxDecoration(color: AppColors.borderLight, borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
                 const SizedBox(height: 14),
                 const Text('Sipariş Özeti & Ödeme', style: AppTextStyles.heading2),
                 const SizedBox(height: 16),
@@ -92,25 +93,12 @@ class _CheckoutBottomSheetState extends State<CheckoutBottomSheet> {
     );
   }
 
-  Widget _buildDragHandle() {
-    return Center(
-      child: Container(
-        width: 44,
-        height: 5,
-        decoration: BoxDecoration(color: AppColors.borderLight, borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
-
   Widget _buildTotalRow(double total) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text('Ödenecek Tutar:', style: AppTextStyles.cardTitle),
-        Text(
-          '₺${total.toStringAsFixed(2)}',
-          style: AppTextStyles.heading1.copyWith(color: AppColors.primary, fontSize: 20),
-        ),
+        Text('₺${total.toStringAsFixed(2)}', style: AppTextStyles.heading1.copyWith(color: AppColors.primary, fontSize: 20)),
       ],
     );
   }
@@ -126,23 +114,17 @@ class _CheckoutBottomSheetState extends State<CheckoutBottomSheet> {
       );
       return;
     }
-
     final targetAddr = addresses.firstWhere((a) => a.id == _selectedAddressId);
     final targetCard = cards.firstWhere((c) => c.id == _selectedCardId);
     final user = AuthRepository().currentUser;
-
     if (user != null) {
       try {
         await ShopRepository().createOrder(
-          uid: user.uid,
-          items: shopState.cartItems,
-          totalAmount: shopState.totalAmount,
-          addressTitle: targetAddr.title,
-          cardLastFour: targetCard.lastFourDigits,
+          uid: user.uid, items: shopState.cartItems, totalAmount: shopState.totalAmount,
+          addressTitle: targetAddr.title, cardLastFour: targetCard.lastFourDigits,
         );
       } catch (_) {}
     }
-
     widget.shopBloc.add(const ClearCartAndCheckout());
     if (mounted) {
       Navigator.pop(context);

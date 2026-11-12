@@ -1,4 +1,3 @@
-// Flutter temel widget kütüphanesi ve BLoC durum sağlayıcıları
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
@@ -8,9 +7,7 @@ import '../../profile/models/profile_extra_models.dart';
 
 /// Kullanıcının kayıtlı ev adresini hazır seçili tutan ve manuel ilçe/semt araması sağlayan adres seçici.
 class EmergencyAddressSelector extends StatefulWidget {
-  // Seçilen veya aranan adres/semt değiştiğinde üst widget'a bildiren geri çağırım (callback).
   final ValueChanged<String> onAddressChanged;
-
   const EmergencyAddressSelector({super.key, required this.onAddressChanged});
 
   @override
@@ -18,22 +15,19 @@ class EmergencyAddressSelector extends StatefulWidget {
 }
 
 class _EmergencyAddressSelectorState extends State<EmergencyAddressSelector> {
-  // Manuel arama metin kutusunu kontrol eden metin denetleyicisi.
   final _searchController = TextEditingController();
-  // Ev adresinin mi yoksa özel aramanın mı seçili olduğunu tutan bayrak.
   bool _isHomeSelected = true;
 
   @override
   void dispose() {
-    _searchController.dispose(); super.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // ProfileBloc'taki güncel kullanıcı profili ve kayıtlı adresleri dinler.
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        // Kullanıcının kayıtlı 'Ev' adresini bulur, yoksa ilk adresi alır.
         UserAddressModel? homeAddr;
         if (state is ProfileLoaded && state.addresses.isNotEmpty) {
           homeAddr = state.addresses.firstWhere((a) => a.title.toLowerCase().contains('ev'), orElse: () => state.addresses.first);
@@ -45,21 +39,20 @@ class _EmergencyAddressSelectorState extends State<EmergencyAddressSelector> {
           children: [
             const Text('Mevcut Adresiniz', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textDark)),
             const SizedBox(height: 8),
-            _buildHomeCard(homeAddr?.title ?? 'Ev Adresi', fullAddress), // Kayıtlı Ev Adresi Kartı
+            _buildHomeCard(homeAddr?.title ?? 'Ev Adresi', fullAddress),
             const SizedBox(height: 10),
-            _buildSearchBar(), // Manuel Arama Kutusu ve "Bul" Butonu
+            _buildSearchBar(),
           ],
         );
       },
     );
   }
 
-  // Kullanıcının kayıtlı ev adresini gösteren ve tek dokunuşla seçtiren kart widget'ı.
   Widget _buildHomeCard(String title, String address) {
     return GestureDetector(
       onTap: () {
         setState(() { _isHomeSelected = true; _searchController.clear(); });
-        widget.onAddressChanged(''); // Arama filtresini temizleyip ev adresine döner.
+        widget.onAddressChanged('');
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -103,7 +96,6 @@ class _EmergencyAddressSelectorState extends State<EmergencyAddressSelector> {
     );
   }
 
-  // Farklı bir semt/ilçe yazmak isteyen kullanıcılar için arama çubuğu ve butonu.
   Widget _buildSearchBar() {
     return Row(
       children: [

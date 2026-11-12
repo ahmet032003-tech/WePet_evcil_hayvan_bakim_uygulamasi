@@ -11,10 +11,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository _userRepo;
   final AuthRepository _authRepo;
 
-  ProfileBloc({
-    UserRepository? userRepo,
-    AuthRepository? authRepo,
-  })  : _userRepo = userRepo ?? UserRepository(),
+  ProfileBloc({UserRepository? userRepo, AuthRepository? authRepo})
+      : _userRepo = userRepo ?? UserRepository(),
         _authRepo = authRepo ?? AuthRepository(),
         super(const ProfileInitial()) {
     on<LoadProfileData>(_onLoadProfileData);
@@ -43,12 +41,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         }
       } catch (_) {}
     }
-
     emit(ProfileLoaded(
       pets: List<PetProfileModel>.from(MockData.samplePets),
-      userName: name,
-      userPhone: phone,
-      userEmail: email,
+      userName: name, userPhone: phone, userEmail: email,
       addresses: const [
         UserAddressModel(id: 'addr_1', title: 'Ev Adresi', fullAddress: 'Fenerbahçe Mah. Lale Sok. No: 12 D: 4, Kadıköy / İstanbul'),
         UserAddressModel(id: 'addr_2', title: 'İş Yeri', fullAddress: 'Büyükdere Cad. No: 193, Levent / İstanbul'),
@@ -65,11 +60,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final s = state;
     if (s is ProfileLoaded) {
       final user = _authRepo.currentUser;
-      if (user != null) {
-        try { await _userRepo.addPet(user.uid, event.pet); } catch (_) {}
-      }
-      final updated = List<PetProfileModel>.from(s.pets)..add(event.pet);
-      emit(s.copyWith(pets: updated, selectedPetTab: event.pet.type));
+      if (user != null) { try { await _userRepo.addPet(user.uid, event.pet); } catch (_) {} }
+      emit(s.copyWith(pets: List<PetProfileModel>.from(s.pets)..add(event.pet), selectedPetTab: event.pet.type));
     }
   }
 
@@ -77,9 +69,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final s = state;
     if (s is ProfileLoaded) {
       final user = _authRepo.currentUser;
-      if (user != null) {
-        try { await _userRepo.deletePet(user.uid, event.petId); } catch (_) {}
-      }
+      if (user != null) { try { await _userRepo.deletePet(user.uid, event.petId); } catch (_) {} }
       emit(s.copyWith(pets: s.pets.where((p) => p.id != event.petId).toList()));
     }
   }
@@ -89,9 +79,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (s is ProfileLoaded) {
       final user = _authRepo.currentUser;
       if (user != null) {
-        try {
-          await _userRepo.saveUserProfile(uid: user.uid, name: event.name, email: event.email, phone: event.phone);
-        } catch (_) {}
+        try { await _userRepo.saveUserProfile(uid: user.uid, name: event.name, email: event.email, phone: event.phone); } catch (_) {}
       }
       emit(s.copyWith(userName: event.name, userPhone: event.phone, userEmail: event.email));
     }
@@ -100,15 +88,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Future<void> _onAddAddress(AddAddress event, Emitter<ProfileState> emit) async {
     final s = state;
     if (s is ProfileLoaded) {
-      final newAddr = UserAddressModel(
-        id: 'addr_${DateTime.now().millisecondsSinceEpoch}',
-        title: event.title,
-        fullAddress: event.fullAddress,
-      );
+      final newAddr = UserAddressModel(id: 'addr_${DateTime.now().millisecondsSinceEpoch}', title: event.title, fullAddress: event.fullAddress);
       final user = _authRepo.currentUser;
-      if (user != null) {
-        try { await _userRepo.addAddress(user.uid, newAddr); } catch (_) {}
-      }
+      if (user != null) { try { await _userRepo.addAddress(user.uid, newAddr); } catch (_) {} }
       emit(s.copyWith(addresses: [...s.addresses, newAddr]));
     }
   }
@@ -118,9 +100,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (s is ProfileLoaded) {
       final target = s.addresses.firstWhere((a) => a.id == event.addressId);
       final user = _authRepo.currentUser;
-      if (user != null) {
-        try { await _userRepo.deleteAddress(user.uid, target); } catch (_) {}
-      }
+      if (user != null) { try { await _userRepo.deleteAddress(user.uid, target); } catch (_) {} }
       emit(s.copyWith(addresses: s.addresses.where((a) => a.id != event.addressId).toList()));
     }
   }
@@ -128,15 +108,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Future<void> _onAddPaymentMethod(AddPaymentMethod event, Emitter<ProfileState> emit) async {
     final s = state;
     if (s is ProfileLoaded) {
-      final newCard = UserPaymentCardModel(
-        id: 'card_${DateTime.now().millisecondsSinceEpoch}',
-        cardHolder: event.cardHolder,
-        lastFourDigits: event.lastFourDigits,
-      );
+      final newCard = UserPaymentCardModel(id: 'card_${DateTime.now().millisecondsSinceEpoch}', cardHolder: event.cardHolder, lastFourDigits: event.lastFourDigits);
       final user = _authRepo.currentUser;
-      if (user != null) {
-        try { await _userRepo.addPaymentCard(user.uid, newCard); } catch (_) {}
-      }
+      if (user != null) { try { await _userRepo.addPaymentCard(user.uid, newCard); } catch (_) {} }
       emit(s.copyWith(paymentCards: [...s.paymentCards, newCard]));
     }
   }
@@ -146,9 +120,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (s is ProfileLoaded) {
       final target = s.paymentCards.firstWhere((c) => c.id == event.cardId);
       final user = _authRepo.currentUser;
-      if (user != null) {
-        try { await _userRepo.deletePaymentCard(user.uid, target); } catch (_) {}
-      }
+      if (user != null) { try { await _userRepo.deletePaymentCard(user.uid, target); } catch (_) {} }
       emit(s.copyWith(paymentCards: s.paymentCards.where((c) => c.id != event.cardId).toList()));
     }
   }
