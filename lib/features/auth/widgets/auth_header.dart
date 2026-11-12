@@ -15,15 +15,15 @@ class AuthHeader extends StatelessWidget {
           width: 84,
           height: 84,
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
             shape: BoxShape.circle,
             boxShadow: AppColors.softShadow,
           ),
-          child: const Center(
-            child: Icon(
-              Icons.pets_rounded,
-              color: AppColors.primary,
-              size: 44,
+          child: ClipOval(
+            child: Image.asset(
+              'assets/images/wepet_logo.png',
+              width: 84,
+              height: 84,
+              fit: BoxFit.contain,
             ),
           ),
         ),

@@ -30,20 +30,29 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // Sol ve sağ bileşenleri iki uca iter
           children: [
-            // Sol Bölüm: WePet Pati Logosu ve Marka İsmi
+            // Sol Bölüm: WePet Özel Logosu ve Marka İsmi
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: AppColors.primary, // Sıcak Amber zemin
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: AppColors.softShadow,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.pets_rounded, // Pati ikonu
-                    color: AppColors.surface, // Beyaz ikon
-                    size: 20,
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/wepet_logo.png',
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10), // Logo ile metin arası 10px boşluk

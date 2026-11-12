@@ -24,3 +24,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/wepet_banner.png
+    - assets/images/wepet_logo.png
