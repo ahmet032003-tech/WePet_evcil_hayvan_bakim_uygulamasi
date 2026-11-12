@@ -1,4 +1,3 @@
-// Firestore veritabanı kütüphanesini içe aktarır
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/pet_profile_model.dart';
 import '../../features/profile/models/profile_extra_models.dart';
@@ -44,12 +43,7 @@ class UserRepository {
 
   /// Kullanıcının 'users/{uid}/pets' alt koleksiyonuna yeni bir pet profili ekler.
   Future<void> addPet(String uid, PetProfileModel pet) async {
-    await _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('pets')
-        .doc(pet.id)
-        .set({
+    await _firestore.collection('users').doc(uid).collection('pets').doc(pet.id).set({
       'name': pet.name,
       'breed': pet.breed,
       'type': pet.type == PetType.dog ? 'dog' : 'cat',
@@ -60,42 +54,45 @@ class UserRepository {
 
   /// Kullanıcının pet dökümanını siler.
   Future<void> deletePet(String uid, String petId) async {
-    await _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('pets')
-        .doc(petId)
-        .delete();
+    await _firestore.collection('users').doc(uid).collection('pets').doc(petId).delete();
+  }
+
+  /// Kullanıcının Firestore'daki kayıtlı petlerini tek seferlik liste olarak getirir.
+  Future<List<PetProfileModel>> getUserPets(String uid) async {
+    final snap = await _firestore.collection('users').doc(uid).collection('pets').get();
+    return snap.docs.map((d) {
+      final data = d.data();
+      return PetProfileModel(
+        id: d.id,
+        name: data['name'] ?? '',
+        breed: data['breed'] as String?,
+        type: data['type'] == 'cat' ? PetType.cat : PetType.dog,
+        age: data['age'] as int?,
+      );
+    }).toList();
   }
 
   /// Kullanıcının kayıtlı petlerini gerçek zamanlı dinleyen akış (Stream).
   Stream<List<PetProfileModel>> getUserPetsStream(String uid) {
-    return _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('pets')
-        .snapshots()
-        .map((snap) => snap.docs.map((d) {
-              final data = d.data();
-              return PetProfileModel(
-                id: d.id,
-                name: data['name'] ?? '',
-                breed: data['breed'] as String?,
-                type: data['type'] == 'cat' ? PetType.cat : PetType.dog,
-                age: data['age'] as int?,
-              );
-            }).toList());
+    return _firestore.collection('users').doc(uid).collection('pets').snapshots().map(
+          (snap) => snap.docs.map((d) {
+            final data = d.data();
+            return PetProfileModel(
+              id: d.id,
+              name: data['name'] ?? '',
+              breed: data['breed'] as String?,
+              type: data['type'] == 'cat' ? PetType.cat : PetType.dog,
+              age: data['age'] as int?,
+            );
+          }).toList(),
+        );
   }
 
   /// Kullanıcı profiline yeni bir teslimat adresi ekler (arrayUnion).
   Future<void> addAddress(String uid, UserAddressModel address) async {
     await _firestore.collection('users').doc(uid).set({
       'addresses': FieldValue.arrayUnion([
-        {
-          'id': address.id,
-          'title': address.title,
-          'fullAddress': address.fullAddress,
-        }
+        {'id': address.id, 'title': address.title, 'fullAddress': address.fullAddress}
       ]),
     }, SetOptions(merge: true));
   }
@@ -104,11 +101,7 @@ class UserRepository {
   Future<void> deleteAddress(String uid, UserAddressModel address) async {
     await _firestore.collection('users').doc(uid).update({
       'addresses': FieldValue.arrayRemove([
-        {
-          'id': address.id,
-          'title': address.title,
-          'fullAddress': address.fullAddress,
-        }
+        {'id': address.id, 'title': address.title, 'fullAddress': address.fullAddress}
       ]),
     });
   }
@@ -117,11 +110,7 @@ class UserRepository {
   Future<void> addPaymentCard(String uid, UserPaymentCardModel card) async {
     await _firestore.collection('users').doc(uid).set({
       'paymentCards': FieldValue.arrayUnion([
-        {
-          'id': card.id,
-          'cardHolder': card.cardHolder,
-          'lastFourDigits': card.lastFourDigits,
-        }
+        {'id': card.id, 'cardHolder': card.cardHolder, 'lastFourDigits': card.lastFourDigits}
       ]),
     }, SetOptions(merge: true));
   }
@@ -130,11 +119,7 @@ class UserRepository {
   Future<void> deletePaymentCard(String uid, UserPaymentCardModel card) async {
     await _firestore.collection('users').doc(uid).update({
       'paymentCards': FieldValue.arrayRemove([
-        {
-          'id': card.id,
-          'cardHolder': card.cardHolder,
-          'lastFourDigits': card.lastFourDigits,
-        }
+        {'id': card.id, 'cardHolder': card.cardHolder, 'lastFourDigits': card.lastFourDigits}
       ]),
     });
   }

@@ -30,6 +30,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Future<void> _onLoadProfileData(LoadProfileData event, Emitter<ProfileState> emit) async {
     String name = 'Ahmet Yılmaz', phone = '+90 555 123 45 67', email = 'ahmet@wepet.com';
+    List<PetProfileModel> userPets = [];
     final user = _authRepo.currentUser;
     if (user != null) {
       email = user.email ?? email;
@@ -39,10 +40,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           name = profile['name'] ?? name;
           phone = profile['phone'] ?? phone;
         }
+        // Kullanıcının Firestore'daki kendi hayvanlarını getirir, yoksa boş liste kalır.
+        userPets = await _userRepo.getUserPets(user.uid);
       } catch (_) {}
     }
     emit(ProfileLoaded(
-      pets: List<PetProfileModel>.from(MockData.samplePets),
+      pets: userPets,
       userName: name, userPhone: phone, userEmail: email,
       addresses: const [
         UserAddressModel(id: 'addr_1', title: 'Ev Adresi', fullAddress: 'Fenerbahçe Mah. Lale Sok. No: 12 D: 4, Kadıköy / İstanbul'),

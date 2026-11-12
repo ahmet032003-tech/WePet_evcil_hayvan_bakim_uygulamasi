@@ -50,6 +50,9 @@ class ProfileScreen extends StatelessWidget {
                 ProfilePetListSection(
                   pets: state.filteredPets,
                   selectedType: state.selectedPetTab,
+                  onAddPet: () {
+                    _openAddPetModal(context, state.selectedPetTab);
+                  },
                   onDeletePet: (petId) {
                     context.read<ProfileBloc>().add(DeletePetProfile(petId));
                   },

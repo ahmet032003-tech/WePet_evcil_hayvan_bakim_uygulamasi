@@ -36,7 +36,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       : super(
           ProfileState(
             selectedPetType: PetType.dog,
-            pets: MockData.samplePets,
+            pets: const [],
             menuItems: MockData.getProfileMenu(onMenuSelected: onMenuSelected),
           ),
         );
