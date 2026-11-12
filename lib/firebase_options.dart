@@ -14,6 +14,8 @@ class DefaultFirebaseOptions {
         return android;
       case TargetPlatform.iOS:
         return ios;
+      case TargetPlatform.macOS:
+        return macos;
       default:
         return web;
     }
@@ -38,6 +40,15 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCEsIyHFkI203eN6nKTCn61bnudMZYn0rQ',
+    appId: '1:445830677341:ios:05607f9e36dbf15c241eb4',
+    messagingSenderId: '445830677341',
+    projectId: 'bitirme-projesi-ec756',
+    storageBucket: 'bitirme-projesi-ec756.firebasestorage.app',
+    iosBundleId: 'com.wepet.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCEsIyHFkI203eN6nKTCn61bnudMZYn0rQ',
     appId: '1:445830677341:ios:05607f9e36dbf15c241eb4',
     messagingSenderId: '445830677341',

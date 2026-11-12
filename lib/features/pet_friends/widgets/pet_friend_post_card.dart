@@ -49,7 +49,7 @@ class PetFriendPostCard extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: AppColors.primaryLight, shape: BoxShape.circle),
+          decoration: const BoxDecoration(color: AppColors.primaryLight, shape: BoxShape.circle),
           child: const Icon(Icons.pets, color: AppColors.primary, size: 20),
         ),
         const SizedBox(width: 12),

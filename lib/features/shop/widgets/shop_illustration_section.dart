@@ -39,7 +39,7 @@ class ShopIllustrationSection extends StatelessWidget {
               ),
             ),
             // Sol Üst: Ödül Tasması İkonu
-            Positioned(
+            const Positioned(
               top: 28,
               left: 24,
               child: _FloatingBadgeIcon(
@@ -49,7 +49,7 @@ class ShopIllustrationSection extends StatelessWidget {
               ),
             ),
             // Sağ Alt: Kedi Oyuncağı İkonu
-            Positioned(
+            const Positioned(
               bottom: 28,
               right: 24,
               child: _FloatingBadgeIcon(

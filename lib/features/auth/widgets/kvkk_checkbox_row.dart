@@ -43,7 +43,7 @@ class KvkkCheckboxRow extends StatelessWidget {
               child: RichText(
                 text: TextSpan(
                   style: AppTextStyles.bodyRegular.copyWith(fontSize: 12),
-                  children: [
+                  children: const [
                     TextSpan(
                       text: 'KVKK Aydınlatma Metni',
                       style: TextStyle(
@@ -53,7 +53,7 @@ class KvkkCheckboxRow extends StatelessWidget {
                         decorationColor: AppColors.primary,
                       ),
                     ),
-                    const TextSpan(text: '\'ni okudum, onaylıyorum.'),
+                    TextSpan(text: '\'ni okudum, onaylıyorum.'),
                   ],
                 ),
               ),
